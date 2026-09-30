@@ -61,3 +61,118 @@ This showcase project automates the entire ingestion-to-narration pipeline using
 |  - Node.js Integration Test Suite (`test.js`) for CI/CD verification.             |
 +-----------------------------------------------------------------------------------+
 
+
+
+
+## Repository Directory Structure
+
+fpa-automation-showcase/
+├── data/
+│   ├── generate_mock_data.py # Script to populate mock multi-tab Excel files
+│   ├── actuals.xlsx          # Actuals P&L, Balance Sheet, Cash Flow
+│   ├── budget.xlsx           # Annual Master Budget
+│   ├── forecast.xlsx         # 12-Month Rolling Forecast
+│   └── coa_mapping.csv       # Chart of Accounts Crosswalk
+├── engine/
+│   ├── ingestion.py          # Data Loader, Period Matcher & CoA Crosswalk
+│   ├── variance_ratios.py    # Multi-Horizon Variance, DSO/DPO & Working Capital Drag
+│   ├── anonymizer.py         # PDPA / PII Data Redaction Engine
+│   └── llm_narrative.py      # Dual-Mode LLM Engine (Live Ollama + Mock Fallback)
+├── main.py                   # Pipeline CLI Orchestrator
+├── app.py                    # Streamlit Executive Dashboard UI
+├── test.js                   # Node.js Integration & Regression Test Suite
+├── requirements.txt          # Python Package Dependencies
+├── .gitignore                # Git Exclusion Rules
+├── LICENSE                   # MIT License
+└── README.md                 # Complete System Documentation
+
+## 💡 Key Financial Ratios & Metrics Calculated
+
+| Metric Category | Formula / Logic | CFO Strategic Purpose |
+| :--- | :--- | :--- |
+| **Gross Margin %** | (Revenue - COGS) / Revenue * 100 | Measures core product pricing power and direct supply cost expansion. |
+| **Days Sales Outstanding (DSO)** | (Accounts Receivable / Revenue) * 30 | Tracks collection efficiency and customer payment behavior. |
+| **Days Payable Outstanding (DPO)** | (Accounts Payable / COGS) * 30 | Measures supplier credit utilization and cash preservation. |
+| **Working Capital Drag** | DSO - DPO | Pinpoints net cash cycle strain before it impacts liquidity. |
+| **Debtor Turnover** | Revenue / Accounts Receivable | Evaluates asset utilization speed and receivables velocity. |
+| **Payable Turnover** | COGS / Accounts Payable | Monitors vendor credit cycle throughput. |
+
+---
+
+## 🛠️ Step-by-Step Setup Guide (Non-Technical Users)
+
+This guide assumes **zero programming experience**. Follow these steps to get the app running on your computer in under 10 minutes.
+
+### Step 1: Install Required Software (One-time)
+1. **Python (Calculation Engine):** Download and install from [python.org](https://www.python.org/downloads/). 
+   * ⚠️️ **WINDOWS USERS:** Make sure to check the box **"Add python.exe to PATH"** on the very first screen of the installer.
+2. **Node.js (Test Runner):** Download and install the LTS version from [nodejs.org](https://nodejs.org/).
+
+### Step 2: Download & Extract Project
+1. Click the green **Code** button at the top of this GitHub repository and select **Download ZIP**.
+2. Extract the unzipped folder to your **Desktop**.
+
+### Step 3: Open Terminal / Command Prompt
+* **Windows:** Press `Win + R`, type `cmd`, and press **Enter**.
+* **Mac:** Press `Cmd + Space`, type `Terminal`, and press **Return**.
+
+Navigate into the project folder by running:
+```bash
+cd Desktop/fpa-automation-showcase
+
+###Step 4: Install Dependencies & Create Data
+1. Copy and paste this command to install all required libraries:
+pip install -r requirements.txt
+
+2. Generate the sample 🧪 Integration Testing & Bug Resolution Log
+To ensure enterprise-grade stability, all core components are verified using the Node.js Integration Test Suite (test.js). Below are key edge cases identified and resolved during development:
+
+1. Unmapped ERP Account Codes (Silent P&L Drops)
+Issue: When raw ERP actuals contained new GL codes absent from coa_mapping.csv, standard inner joins dropped line items silently, underreporting total revenue.
+
+Fix: Implemented a left-join strategy paired with an explicit Audit Warning Logger in engine/ingestion.py that flags unmapped account codes without breaking execution.
+
+2. Zero-Division Handling in Ratio Calculations
+Issue: During initial operational months or zero-spend cost centers, zero values in COGS or Accounts Receivable caused ZeroDivisionError crashes when calculating DPO or Turnover ratios.
+
+Fix: Added safety guard clauses (if revenue > 0 else 0.0) across all ratio functions in engine/variance_ratios.py.
+
+3. CI/CD Environment LLM Offline Failures
+Issue: Automated testing environments without a running local Ollama instance threw connection errors during AI narrative generation.
+
+Fix: Built a Dual-Mode LLM Module (engine/llm_narrative.py) featuring an offline Mock Fallback Engine triggered via the --mock CLI flag.financial datasets by running:
+python data/generate_mock_data.py
+
+### Step 5: Verify via Node.js Test Suite
+1. Run the automated integration test suite:
+node test.js
+When you see ALL INTEGRATION & REGRESSION TESTS PASSED (4/4), your environment is 100% verified!
+
+### Step 6: Launch the Dashboard
+Start the interactive Web UI:
+streamlit run app.py
+
+Your default browser will automatically open to http://localhost:8501.
+
+
+##🧪 Integration Testing & Bug Resolution Log
+To ensure enterprise-grade stability, all core components are verified using the Node.js Integration Test Suite (test.js). Below are key edge cases identified and resolved during development:
+
+1. Unmapped ERP Account Codes (Silent P&L Drops)
+Issue: When raw ERP actuals contained new GL codes absent from coa_mapping.csv, standard inner joins dropped line items silently, underreporting total revenue.
+
+Fix: Implemented a left-join strategy paired with an explicit Audit Warning Logger in engine/ingestion.py that flags unmapped account codes without breaking execution.
+
+2. Zero-Division Handling in Ratio Calculations
+Issue: During initial operational months or zero-spend cost centers, zero values in COGS or Accounts Receivable caused ZeroDivisionError crashes when calculating DPO or Turnover ratios.
+
+Fix: Added safety guard clauses (if revenue > 0 else 0.0) across all ratio functions in engine/variance_ratios.py.
+
+3. CI/CD Environment LLM Offline Failures
+Issue: Automated testing environments without a running local Ollama instance threw connection errors during AI narrative generation.
+
+Fix: Built a Dual-Mode LLM Module (engine/llm_narrative.py) featuring an offline Mock Fallback Engine triggered via the --mock CLI flag.
+
+
+
+
