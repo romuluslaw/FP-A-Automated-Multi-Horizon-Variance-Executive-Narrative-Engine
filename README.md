@@ -1,0 +1,2 @@
+# FP-A-Automated-Multi-Horizon-Variance-Executive-Narrative-Engine
+An open-source, zero-cost AI automation solution built for Financial Planning &amp; Analysis (FP&amp;A) teams. Automates month-end Budget vs. Actuals reporting, metrics, and leverages local, offline LLMs to generate tailored, 3-column stakeholder write-ups (Leadership, Board of Directors, and Investors) while enforcing strict PDPA / PII data anonymization
